@@ -15,14 +15,18 @@ This repository contains:
 - `recordings/` — proof artifacts (`turn_loop.log`, `reconnect.log`) generated
   by the harness against the stub server.
 
+## License
+
+MIT — see [LICENSE](./LICENSE). Copyright (c) 2024-present PokéBrave contributors.
+
+This module runs within [OTClientV8](https://github.com/OTCv8/otclientv8) (MIT, © 2018-2023 OTClientV8), which derives from [OTClient](https://github.com/edubart/otclient) (MIT, © 2010-2017 OTClient). This repository does **not** vendor upstream OTCv8 or OTClient source files. Provenance and per-file header audit in [NOTICE](./NOTICE).
+
 ## Authority and licence posture
 
 - The HUD never authors authoritative state. Damage, status, hit/miss, turn
   order, RNG, and KO decisions come from the server via `battle:resolve` and
   `battle:snapshot`. The HUD only renders.
-- This repo does **not** vendor upstream OTCv8 binaries or assets. Packaging
-  and redistribution paths are explicitly off-limits while the OTCv8 fork
-  licence cleanup tracked in DEV-2 is unresolved.
+- This repo does **not** vendor upstream OTCv8 binaries or assets.
 
 ## Running the proof
 
