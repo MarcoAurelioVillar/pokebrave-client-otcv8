@@ -10,6 +10,16 @@
 
 BattleHud = {}
 
+-- OTCv8's built-in module resolver treats dots as literal characters, not as
+-- directory separators, so require('locale.init') and require('ui.X') fail
+-- unless the module directory is in package.path. Add it here when running
+-- inside OTCv8 (g_modules is non-nil); the headless harness injects the
+-- correct paths itself before calling require('battlehud').
+if g_modules then
+  local p = g_modules.getModule('game_battlehud'):getPath()
+  package.path = p .. '/?.lua;' .. p .. '/?/init.lua;' .. package.path
+end
+
 local Protocol    = require('protocol')
 local State       = require('state')
 local Prediction  = require('prediction')
