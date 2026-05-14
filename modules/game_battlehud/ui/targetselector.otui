@@ -1,0 +1,38 @@
+TargetSelectorPanel < Panel
+  background-color: #000000a0
+  border-width: 1
+  border-color: #2a2a2a
+
+  Label
+    id: title
+    text-align: center
+    !text: Locale.t('battle.target.select')
+    margin-top: 16
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+
+  Panel
+    id: targetList
+    anchors.top: title.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 12
+    width: 320
+    height: 240
+    layout:
+      type: verticalBox
+      spacing: 6
+
+  Button
+    id: cancelBtn
+    anchors.bottom: parent.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-bottom: 16
+    width: 120
+    height: 28
+    !text: Locale.t('battle.action.cancel')
+    @onClick: BattleHud.cancelTargetSelector()
+
+TargetSelectorEntry < Button
+  background-color: #1a1a1a
+  width: 320
+  height: 28

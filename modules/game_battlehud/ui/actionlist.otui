@@ -1,0 +1,57 @@
+ActionListPanel < Panel
+  background-color: #00000080
+  border-width: 1
+  border-color: #2a2a2a
+
+  Label
+    id: title
+    text-align: center
+    !text: Locale.t('battle.hud.your_turn')
+    margin: 4 0 0 0
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+
+  Button
+    id: moveBtn
+    anchors.top: title.bottom
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 12
+    width: 130
+    height: 32
+    !text: Locale.t('battle.action.move')
+    @onClick: BattleHud.onAction('move')
+
+  Button
+    id: itemBtn
+    anchors.top: title.bottom
+    anchors.right: parent.right
+    margin-top: 8
+    margin-right: 12
+    width: 130
+    height: 32
+    !text: Locale.t('battle.action.item')
+    @onClick: BattleHud.onAction('item')
+
+  Button
+    id: switchBtn
+    anchors.top: moveBtn.bottom
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 12
+    width: 130
+    height: 32
+    !text: Locale.t('battle.action.switch')
+    @onClick: BattleHud.onAction('switch')
+
+  Button
+    id: surrenderBtn
+    anchors.top: itemBtn.bottom
+    anchors.right: parent.right
+    margin-top: 8
+    margin-right: 12
+    width: 130
+    height: 32
+    !text: Locale.t('battle.action.surrender')
+    @onClick: BattleHud.onAction('surrender')

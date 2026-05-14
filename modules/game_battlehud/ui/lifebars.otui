@@ -1,0 +1,43 @@
+LifeBarPanel < Panel
+  background-color: #00000060
+  border-width: 1
+  border-color: #2a2a2a
+
+  Label
+    id: nameLabel
+    anchors.top: parent.top
+    anchors.left: parent.left
+    margin: 4 0 0 8
+
+  Label
+    id: levelLabel
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin: 4 8 0 0
+    text-align: right
+    width: 80
+
+  ProgressBar
+    id: hpBar
+    anchors.top: nameLabel.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin: 6 8 0 8
+    height: 12
+    background-color: #1a1a1a
+    fill-color: #4caf50
+
+  Label
+    id: hpLabel
+    anchors.top: hpBar.bottom
+    anchors.left: parent.left
+    margin: 2 0 0 8
+
+  Label
+    id: statusLabel
+    anchors.top: hpBar.bottom
+    anchors.right: parent.right
+    margin: 2 8 0 0
+    text-align: right
+    width: 120
+    text-color: #f0a020

@@ -1,0 +1,82 @@
+BattleHudWindow < MainWindow
+  id: battleHudWindow
+  !text: Locale.t('battle.hud.title')
+  size: 760 420
+  @onEscape: BattleHud.requestSurrender()
+
+  Label
+    id: turnLabel
+    text-align: center
+    !text: Locale.t('battle.hud.turn', { turn = 0 })
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 8
+
+  Label
+    id: statusLabel
+    text-align: center
+    !text: Locale.t('battle.hud.waiting_opponent')
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 4
+
+  Label
+    id: deadlineLabel
+    text-align: right
+    text-color: #f0a020
+    anchors.top: parent.top
+    anchors.right: parent.right
+    margin-top: 8
+    margin-right: 16
+    width: 80
+    text: ''
+
+  TurnOrderBar
+    id: turnOrderBar
+    anchors.top: statusLabel.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 6
+    width: 720
+    height: 24
+
+  LifeBarPanel
+    id: opponentLifeBar
+    anchors.top: turnOrderBar.bottom
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 12
+    width: 360
+    height: 64
+
+  LifeBarPanel
+    id: playerLifeBar
+    anchors.top: opponentLifeBar.bottom
+    anchors.left: parent.left
+    margin-top: 8
+    margin-left: 12
+    width: 360
+    height: 64
+
+  TextLogPanel
+    id: textLog
+    anchors.top: turnOrderBar.bottom
+    anchors.right: parent.right
+    anchors.bottom: actionList.top
+    margin-top: 8
+    margin-right: 12
+    margin-bottom: 8
+    width: 340
+
+  ActionListPanel
+    id: actionList
+    anchors.bottom: parent.bottom
+    anchors.right: parent.right
+    margin-bottom: 12
+    margin-right: 12
+    width: 340
+    height: 140
+
+  TargetSelectorPanel
+    id: targetSelector
+    visible: false
+    anchors.fill: parent

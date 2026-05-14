@@ -1,0 +1,36 @@
+TextLogPanel < Panel
+  background-color: #00000080
+  border-width: 1
+  border-color: #2a2a2a
+
+  Label
+    id: title
+    text-align: center
+    !text: Locale.t('battle.hud.title')
+    anchors.top: parent.top
+    anchors.left: parent.left
+    anchors.right: parent.right
+    margin-top: 2
+
+  ScrollablePanel
+    id: lines
+    anchors.top: title.bottom
+    anchors.left: parent.left
+    anchors.right: parent.right
+    anchors.bottom: parent.bottom
+    margin: 4 4 4 4
+    vertical-scroll-bar: vbar
+    layout:
+      type: verticalBox
+      spacing: 2
+
+  VerticalScrollBar
+    id: vbar
+    anchors.top: lines.top
+    anchors.bottom: lines.bottom
+    anchors.right: parent.right
+    width: 8
+
+TextLogLine < Label
+  text-wrap: true
+  text-align: left

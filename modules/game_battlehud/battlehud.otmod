@@ -1,0 +1,9 @@
+Module
+  name: game_battlehud
+  description: PokéBrave battle HUD (Phase 1, OTCv8). Speaks battle:* opcodes on extended slot 60.
+  author: PokéBrave / ClientEngineer
+  website: https://pokebrave.example
+  scripts:
+    - battlehud
+  @onLoad: BattleHud.init()
+  @onUnload: BattleHud.terminate()
