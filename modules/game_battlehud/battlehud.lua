@@ -21,6 +21,9 @@ local TurnOrder      = require('ui.turnorder')
 local TargetSelector = require('ui.targetselector')
 local LifeBars       = require('ui.lifebars')
 local TextLog        = require('ui.textlog')
+local AnimQueue      = require('animqueue')
+local HitFX          = require('hitfx')
+local Sounds         = require('sounds')
 
 local window = nil
 local state = nil
@@ -80,9 +83,16 @@ function BattleHud.init()
     locale = Locale,
   })
 
+  -- Wire the OTCv8 scheduler so AnimQueue delays real animation durations.
+  if scheduleEvent then
+    AnimQueue.setScheduler(function(delayMs, cb) scheduleEvent(cb, delayMs) end)
+  end
+  AnimQueue.reset()
+
   if g_ui and g_ui.loadUI then
     window = g_ui.displayUI('ui/battlehud.otui')
     if window and window.hide then window:hide() end
+    HitFX.setRoot(window)
   end
 
   if ProtocolGame and ProtocolGame.registerExtendedOpcode then
@@ -98,9 +108,10 @@ function BattleHud.init()
     })
   end
 
-  -- Observer that re-renders all widgets on every state change.
+  -- Observer: dispatch VFX unconditionally, then render widgets.
+  -- VFX dispatch must NOT be gated by window so it works in headless/test mode.
   events:subscribe(function(kind, envelope)
-    BattleHud._render(kind, envelope)
+    BattleHud._onEvent(kind, envelope)
   end)
 end
 
@@ -129,6 +140,11 @@ function BattleHud._onExtendedOpcode(payload)
 end
 
 function BattleHud._onConnectionDrop()
+  -- Flush before any arena teardown so pending drainNext callbacks are no-ops.
+  -- Lenses: anti-desync, arena-isolation.
+  AnimQueue.flush()
+  HitFX.reset()
+  Sounds.reset()
   if events then events:onDisconnect() end
   if window and state then
     local statusLbl = window.getChildById and window:getChildById('statusLabel') or nil
@@ -242,6 +258,37 @@ function BattleHud.requestSurrender()
   BattleHud.submit({ kind = 'surrender' })
 end
 
+-- --- event dispatch (VFX + render) -----------------------------------------
+
+-- Called for every opcode event. VFX operations run unconditionally so they
+-- are observable in headless/test mode. Widget rendering follows and is gated
+-- by window as usual.
+function BattleHud._onEvent(kind, envelope)
+  -- On reconnect: flush orphaned animations before rebuilding HUD from snapshot.
+  -- Lenses: anti-desync, arena-isolation.
+  if kind == 'snapshot' then
+    AnimQueue.flush()
+    HitFX.reset()
+    Sounds.reset()
+    AnimQueue.reset()
+  end
+
+  -- Push VFX for all resolve events in seq order. Drain is async in OTCv8
+  -- (scheduleEvent) and synchronous in headless/test mode.
+  if kind == 'resolve' and envelope and envelope.body then
+    AnimQueue.push(envelope.body.events, envelope.body.publicState)
+  end
+
+  -- Flush VFX on battle end before freezing input.
+  if kind == 'end' then
+    AnimQueue.flush()
+    HitFX.reset()
+    Sounds.reset()
+  end
+
+  BattleHud._render(kind, envelope)
+end
+
 -- --- rendering -------------------------------------------------------------
 
 function BattleHud._render(kind, envelope)
@@ -284,7 +331,7 @@ function BattleHud._render(kind, envelope)
     TextLog.render(logPanel, lines)
   end
 
-  -- End: freeze input and show outcome line in the text log.
+  -- End: show outcome line in the text log.
   if kind == 'end' and envelope and envelope.body then
     local outcomeKey = 'battle.outcome.draw'
     if state.outcome and state.outcome.winner then
@@ -324,6 +371,9 @@ BattleHud._internal = {
   TargetSelector = TargetSelector,
   LifeBars = LifeBars,
   TextLog = TextLog,
+  AnimQueue = AnimQueue,
+  HitFX = HitFX,
+  Sounds = Sounds,
   getState = function() return state end,
   getEvents = function() return events end,
   getWindow = function() return window end,

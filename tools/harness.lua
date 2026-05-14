@@ -37,6 +37,8 @@ ProtocolGame = nil
 g_clock = { millis = function() return os.time() * 1000 end }
 g_ui = nil; g_modules = nil
 function connect() end; function disconnect() end
+-- Silent g_sounds stub: proves the battle doesn't crash without real audio.
+g_sounds = { play = function(_self, _path) end }
 
 -- ---- recording sink --------------------------------------------------------
 local recording = {}
@@ -48,11 +50,17 @@ Log.setClock(function() return os.time() * 1000 end)
 local BattleHud = require('battlehud')
 BattleHud.init()
 
-local evts = BattleHud._internal.getEvents()
-local state = BattleHud._internal.getState()
-local LifeBars = BattleHud._internal.LifeBars
+local evts      = BattleHud._internal.getEvents()
+local state     = BattleHud._internal.getState()
+local LifeBars  = BattleHud._internal.LifeBars
 local TurnOrder = BattleHud._internal.TurnOrder
 local TextLog   = BattleHud._internal.TextLog
+local AnimQueue = BattleHud._internal.AnimQueue
+
+-- Use a synchronous scheduler in headless mode so animations drain
+-- immediately and appear in the recording with deterministic ordering.
+AnimQueue.setScheduler(function(_delayMs, cb) cb() end)
+AnimQueue.reset()
 
 local function snapshot_hud(kind, envelope)
   local r = { tag = 'hud:' .. kind, ts = os.time() * 1000,

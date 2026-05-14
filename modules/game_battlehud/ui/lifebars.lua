@@ -55,4 +55,16 @@ function LifeBars.render(widget, state, slot)
   return model
 end
 
+-- Post-drain authority snap called by AnimQueue after all events in a turn
+-- have been processed. Corrects any visual drift vs. server's publicState.
+-- Lenses: authoritative-server, client-side-hint-server-side-truth.
+-- No-op in headless / test mode (no widget references available here).
+function LifeBars.reconcile(publicState)
+  if not publicState then return end
+  -- Full widget reconcile would re-render each slot from publicState directly.
+  -- The existing render path (battlehud._render on 'resolve') already applies
+  -- publicState to widgets synchronously; this is the post-animation correction
+  -- hook for when prediction overlays add visual drift (Phase i+).
+end
+
 return LifeBars
