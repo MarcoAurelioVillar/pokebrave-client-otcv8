@@ -6,7 +6,7 @@ TargetSelectorPanel < Panel
   Label
     id: title
     text-align: center
-    !text: Locale.t('battle.target.select')
+    text: Select Target
     margin-top: 16
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
@@ -29,8 +29,8 @@ TargetSelectorPanel < Panel
     margin-bottom: 16
     width: 120
     height: 28
-    !text: Locale.t('battle.action.cancel')
-    @onClick: BattleHud.cancelTargetSelector()
+    text: Cancel
+    enabled: true
 
 TargetSelectorEntry < Button
   background-color: #1a1a1a

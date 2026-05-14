@@ -6,7 +6,7 @@ TextLogPanel < Panel
   Label
     id: title
     text-align: center
-    !text: Locale.t('battle.hud.title')
+    text: Battle Log
     anchors.top: parent.top
     anchors.left: parent.left
     anchors.right: parent.right

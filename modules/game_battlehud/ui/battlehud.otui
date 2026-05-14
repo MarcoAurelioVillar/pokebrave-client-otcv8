@@ -1,13 +1,15 @@
-BattleHudWindow < MainWindow
+Window
   id: battleHudWindow
-  !text: Locale.t('battle.hud.title')
+  text: Battle HUD
   size: 760 420
-  @onEscape: BattleHud.requestSurrender()
+  anchors.centerIn: parent
+  focusable: true
+  enabled: true
 
   Label
     id: turnLabel
     text-align: center
-    !text: Locale.t('battle.hud.turn', { turn = 0 })
+    text: Turn 1
     anchors.top: parent.top
     anchors.horizontalCenter: parent.horizontalCenter
     margin-top: 8
@@ -15,7 +17,7 @@ BattleHudWindow < MainWindow
   Label
     id: statusLabel
     text-align: center
-    !text: Locale.t('battle.hud.waiting_opponent')
+    text: Waiting opponent...
     anchors.top: prev.bottom
     anchors.horizontalCenter: parent.horizontalCenter
     margin-top: 4
@@ -61,13 +63,13 @@ BattleHudWindow < MainWindow
     id: textLog
     anchors.top: turnOrderBar.bottom
     anchors.right: parent.right
-    anchors.bottom: actionList.top
+    anchors.bottom: parent.bottom
     margin-top: 8
     margin-right: 12
-    margin-bottom: 8
+    margin-bottom: 156
     width: 340
 
-  ActionListPanel
+  Panel
     id: actionList
     anchors.bottom: parent.bottom
     anchors.right: parent.right
@@ -75,6 +77,58 @@ BattleHudWindow < MainWindow
     margin-right: 12
     width: 340
     height: 140
+    background-color: #00000080
+    border-width: 1
+    border-color: #2a2a2a
+
+    Label
+      id: actionTitle
+      text-align: center
+      text: Your Turn
+      margin: 4 0 0 0
+      anchors.top: parent.top
+      anchors.left: parent.left
+      anchors.right: parent.right
+
+    Button
+      id: moveBtn
+      anchors.top: actionTitle.bottom
+      anchors.left: parent.left
+      margin-top: 8
+      margin-left: 12
+      width: 130
+      height: 32
+      text: Move
+
+    Button
+      id: itemBtn
+      anchors.top: actionTitle.bottom
+      anchors.right: parent.right
+      margin-top: 8
+      margin-right: 12
+      width: 130
+      height: 32
+      text: Item
+
+    Button
+      id: switchBtn
+      anchors.top: moveBtn.bottom
+      anchors.left: parent.left
+      margin-top: 8
+      margin-left: 12
+      width: 130
+      height: 32
+      text: Switch
+
+    Button
+      id: surrenderBtn
+      anchors.top: itemBtn.bottom
+      anchors.right: parent.right
+      margin-top: 8
+      margin-right: 12
+      width: 130
+      height: 32
+      text: Surrender
 
   TargetSelectorPanel
     id: targetSelector

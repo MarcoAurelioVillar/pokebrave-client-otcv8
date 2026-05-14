@@ -56,15 +56,13 @@ local function bindJson()
   -- OTCv8's vendored json lib varies by fork. We try a few names and
   -- fall back to a small embedded one for tests via tools/json.lua.
   local cjson_ok, cjson = pcall(require, 'cjson')
-  if cjson_ok and cjson then
-    Protocol.setJson(cjson.encode, cjson.decode)
-    return
-  end
+  if cjson_ok and cjson then Protocol.setJson(cjson.encode, cjson.decode); return end
   local rxi_ok, rxi = pcall(require, 'vendor.json')
-  if rxi_ok and rxi then
-    Protocol.setJson(rxi.encode, rxi.decode)
-    return
-  end
+  if rxi_ok and rxi then Protocol.setJson(rxi.encode, rxi.decode); return end
+  local dk_ok, dk = pcall(require, 'dkjson')
+  if dk_ok and dk then Protocol.setJson(dk.encode, dk.decode); return end
+  if type(json) == 'table' and json.encode and json.decode then Protocol.setJson(json.encode, json.decode); return end
+  if type(JSON) == 'table' and JSON.encode and JSON.decode then Protocol.setJson(JSON.encode, JSON.decode); return end
   -- Last resort: the harness injects its own json before init().
   error('battlehud: no JSON provider available; tools/harness.lua injects one')
 end
@@ -90,13 +88,19 @@ function BattleHud.init()
   AnimQueue.reset()
 
   if g_ui and g_ui.loadUI then
+    local styles = {'ui/turnorder.otui','ui/lifebars.otui','ui/textlog.otui','ui/actionlist.otui','ui/targetselector.otui'}
+    for _, s in ipairs(styles) do pcall(function() g_ui.importStyle(s) end) end
     window = g_ui.displayUI('ui/battlehud.otui')
-    if window and window.hide then window:hide() end
+    if window then
+      if window.hide then window:hide() end
+      if window.onEscape then window.onEscape = function() BattleHud.requestSurrender() end end
+      BattleHud._wireButtons()
+    end
     HitFX.setRoot(window)
   end
 
   if ProtocolGame and ProtocolGame.registerExtendedOpcode then
-    ProtocolGame.registerExtendedOpcode(Protocol.EXTENDED_OPCODE, function(_, payload)
+    ProtocolGame.registerExtendedOpcode(Protocol.EXTENDED_OPCODE, function(protocol, opcode, payload)
       BattleHud._onExtendedOpcode(payload)
     end)
   end
@@ -258,6 +262,26 @@ function BattleHud.requestSurrender()
   BattleHud.submit({ kind = 'surrender' })
 end
 
+function BattleHud._wireButtons()
+  if not window then return end
+  local actionPanel = window:getChildById('actionList')
+  if actionPanel then
+    local moveBtn = actionPanel:getChildById('moveBtn')
+    if moveBtn then moveBtn.onMouseRelease = function(self, mousePos, mouseButton) if mouseButton == MouseLeftButton then BattleHud.onAction('move') end return true end end
+    local itemBtn = actionPanel:getChildById('itemBtn')
+    if itemBtn then itemBtn.onMouseRelease = function(self, mousePos, mouseButton) if mouseButton == MouseLeftButton then BattleHud.onAction('item') end return true end end
+    local switchBtn = actionPanel:getChildById('switchBtn')
+    if switchBtn then switchBtn.onMouseRelease = function(self, mousePos, mouseButton) if mouseButton == MouseLeftButton then BattleHud.onAction('switch') end return true end end
+    local surrenderBtn = actionPanel:getChildById('surrenderBtn')
+    if surrenderBtn then surrenderBtn.onMouseRelease = function(self, mousePos, mouseButton) if mouseButton == MouseLeftButton then BattleHud.onAction('surrender') end return true end end
+  end
+  local targetPanel = window:getChildById('targetSelector')
+  if targetPanel then
+    local cancelBtn = targetPanel:getChildById('cancelBtn')
+    if cancelBtn then cancelBtn.onMouseRelease = function(self, mousePos, mouseButton) if mouseButton == MouseLeftButton then BattleHud.cancelTargetSelector() end return true end end
+  end
+end
+
 -- --- event dispatch (VFX + render) -----------------------------------------
 
 -- Called for every opcode event. VFX operations run unconditionally so they
@@ -297,20 +321,20 @@ function BattleHud._render(kind, envelope)
 
   -- Header.
   local turnLbl = window.getChildById and window:getChildById('turnLabel') or nil
-  if turnLbl and turnLbl.setText then
-    turnLbl:setText(Locale.t('battle.hud.turn', { turn = state.turn }))
-  end
+  if turnLbl and turnLbl.setText then turnLbl:setText(Locale.t('battle.hud.turn', { turn = state.turn })) end
   local statusLbl = window.getChildById and window:getChildById('statusLabel') or nil
   if statusLbl and statusLbl.setText then
+    local txt
     if state.lifecycle == 'awaiting_choices' and state:validActions() ~= nil then
-      statusLbl:setText(Locale.t('battle.hud.your_turn'))
+      txt = Locale.t('battle.hud.your_turn')
     elseif state.lifecycle == 'forced_switch' then
-      statusLbl:setText(Locale.t('battle.hud.forced_switch'))
+      txt = Locale.t('battle.hud.forced_switch')
     elseif state.lifecycle == 'paused_for_reconnect' then
-      statusLbl:setText(Locale.t('battle.hud.paused'))
+      txt = Locale.t('battle.hud.paused')
     else
-      statusLbl:setText(Locale.t('battle.hud.waiting_opponent'))
+      txt = Locale.t('battle.hud.waiting_opponent')
     end
+    statusLbl:setText(txt)
   end
 
   -- Action list, life bars.

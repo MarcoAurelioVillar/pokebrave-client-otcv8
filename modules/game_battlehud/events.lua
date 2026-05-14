@@ -54,8 +54,6 @@ function Events:receive(payload)
   local envelope, err = Protocol.decode(payload)
   if not envelope then
     Log.decode_error(err)
-    -- Per §4.1, a client that can't parse a server message should emit
-    -- a `battle:ack{kind:"rejected_decode"}` instead of `battle:error`.
     self:_sendAck(self.state.sessionId or '', err and err.ref or nil, 'rejected_decode')
     return false, (err and err.code) or 'bad_envelope'
   end

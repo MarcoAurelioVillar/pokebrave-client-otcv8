@@ -1,0 +1,20 @@
+UIWidget
+  id: battleHudWindow
+  text: Battle HUD
+  size: 760 420
+
+  Label
+    id: turnLabel
+    text-align: center
+    text: Turn 1
+    anchors.top: parent.top
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 8
+
+  Label
+    id: statusLabel
+    text-align: center
+    text: Waiting...
+    anchors.top: prev.bottom
+    anchors.horizontalCenter: parent.horizontalCenter
+    margin-top: 4
