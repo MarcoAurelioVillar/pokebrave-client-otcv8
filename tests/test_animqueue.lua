@@ -179,7 +179,7 @@ io.write('\n--- animqueue: publicState reconciliation ---\n')
 
 test('reconcile fires exactly once per turn, after last event drains', function()
   local AQ = fresh_animqueue()
-  local LifeBars = require('ui.lifebars')
+  local LifeBars = require('ui_lifebars')
 
   local reconcile_calls = 0
   local orig_reconcile = LifeBars.reconcile
@@ -207,7 +207,7 @@ test('reconcile not called if flush occurs before drain completes', function()
   local deferred_cb = nil
   AQ.setScheduler(function(_ms, cb) deferred_cb = cb end)
 
-  local LifeBars = require('ui.lifebars')
+  local LifeBars = require('ui_lifebars')
   local reconcile_calls = 0
   local orig_reconcile = LifeBars.reconcile
   LifeBars.reconcile = function(_ps) reconcile_calls = reconcile_calls + 1 end

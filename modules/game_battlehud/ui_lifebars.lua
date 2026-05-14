@@ -1,17 +1,14 @@
--- ui/lifebars.lua
+-- ui_lifebars.lua  (was ui/lifebars.lua — flattened for OTCv8 compatibility)
 --
--- Life bars are read from `state.publicState` only. publicState is the
--- canonical post-turn snapshot (§3.3) so a life bar that reflects it is by
--- definition reconciled.
+-- Life bars read from state.publicState only.
 
 local LifeBars = {}
 
-local Locale = require('locale.init')
+local Locale = require('locale')
 
 local function statusLabel(status)
   if not status or not status.name then return '' end
-  local key = 'battle.status.' .. status.name
-  return Locale.t(key)
+  return Locale.t('battle.status.' .. status.name)
 end
 
 function LifeBars.modelFor(state, slot)
@@ -49,22 +46,16 @@ function LifeBars.render(widget, state, slot)
   if stLbl and stLbl.setText then stLbl:setText(model.status) end
   if hpBar and hpBar.setPercent then
     local pct = 0
-    if model.hp_max > 0 then pct = math.max(0, math.min(100, math.floor((model.hp_current / model.hp_max) * 100))) end
+    if model.hp_max > 0 then
+      pct = math.max(0, math.min(100, math.floor((model.hp_current / model.hp_max) * 100)))
+    end
     hpBar:setPercent(pct)
   end
   return model
 end
 
--- Post-drain authority snap called by AnimQueue after all events in a turn
--- have been processed. Corrects any visual drift vs. server's publicState.
--- Lenses: authoritative-server, client-side-hint-server-side-truth.
--- No-op in headless / test mode (no widget references available here).
 function LifeBars.reconcile(publicState)
   if not publicState then return end
-  -- Full widget reconcile would re-render each slot from publicState directly.
-  -- The existing render path (battlehud._render on 'resolve') already applies
-  -- publicState to widgets synchronously; this is the post-animation correction
-  -- hook for when prediction overlays add visual drift (Phase i+).
 end
 
 return LifeBars

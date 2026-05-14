@@ -15,7 +15,7 @@
 local Log     = require('log')
 local HitFX   = require('hitfx')
 local Sounds  = require('sounds')
-local LifeBars = require('ui.lifebars')
+local LifeBars = require('ui_lifebars')
 
 local AnimQueue = {}
 

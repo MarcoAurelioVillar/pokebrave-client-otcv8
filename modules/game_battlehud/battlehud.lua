@@ -10,31 +10,17 @@
 
 BattleHud = {}
 
--- OTCv8's built-in module resolver treats dots as literal characters in
--- require() calls, so require('locale.init') looks for 'locale.init.lua'.
--- Derive this module's directory from the current file path and add it to
--- package.path so Lua's standard loader finds locale/init.lua and ui/X.lua.
-do
-  local src = debug.getinfo(1, "S").source
-  if src and src:sub(1, 1) == '@' then
-    local p = src:sub(2):match("^(.*)[/\\][^/\\]+$")
-    if p then
-      package.path = p .. '/?.lua;' .. p .. '/?/init.lua;' .. package.path
-    end
-  end
-end
-
 local Protocol    = require('protocol')
 local State       = require('state')
 local Prediction  = require('prediction')
 local Events      = require('events')
 local Log         = require('log')
-local Locale      = require('locale.init')
-local ActionList     = require('ui.actionlist')
-local TurnOrder      = require('ui.turnorder')
-local TargetSelector = require('ui.targetselector')
-local LifeBars       = require('ui.lifebars')
-local TextLog        = require('ui.textlog')
+local Locale      = require('locale')
+local ActionList     = require('ui_actionlist')
+local TurnOrder      = require('ui_turnorder')
+local TargetSelector = require('ui_targetselector')
+local LifeBars       = require('ui_lifebars')
+local TextLog        = require('ui_textlog')
 local AnimQueue      = require('animqueue')
 local HitFX          = require('hitfx')
 local Sounds         = require('sounds')

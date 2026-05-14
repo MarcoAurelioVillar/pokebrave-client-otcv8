@@ -1,18 +1,15 @@
--- ui/turnorder.lua
+-- ui_turnorder.lua  (was ui/turnorder.lua — flattened for OTCv8 compatibility)
 --
--- Renders the turn-order bar from `events[0].order` (§3.7). Raw stats are
--- never visible — only the server-computed `effectiveSpeed` and `priority`.
+-- Renders the turn-order bar from events[0].order (§3.7).
 
 local TurnOrder = {}
 
-local Locale = require('locale.init')
+local Locale = require('locale')
 
 local function clear(widget)
   if widget and widget.destroyChildren then widget:destroyChildren() end
 end
 
--- Build the visual model the UI should display. Returns a list of rows;
--- the test harness inspects this directly without an OTCv8 widget.
 function TurnOrder.fromResolveBody(body)
   local rows = {}
   if type(body) ~= 'table' or type(body.events) ~= 'table' then return rows end

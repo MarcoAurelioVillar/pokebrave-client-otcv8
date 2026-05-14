@@ -1,13 +1,10 @@
--- ui/textlog.lua
+-- ui_textlog.lua  (was ui/textlog.lua — flattened for OTCv8 compatibility)
 --
--- Walks the `events` array of a `battle:resolve` body in `seq` order and
--- emits one localized line per renderable event. Replay-invariant: a
--- post-mortem viewer reading the same events should produce the same
--- lines.
+-- Walks the events array of a battle:resolve body and emits localized lines.
 
 local TextLog = {}
 
-local Locale = require('locale.init')
+local Locale = require('locale')
 
 local function actorName(state, slotOrRef)
   if not slotOrRef then return '?' end
@@ -24,9 +21,6 @@ local function effectivenessKey(amount, effectiveness)
   return 'battle.event.damage'
 end
 
--- Render a single event into a localized line. Returns nil for events that
--- should not appear in the text log (e.g. choices_locked, action_start of
--- a switch with no narrative).
 function TextLog.lineForEvent(state, evt)
   local k = evt.kind
   if k == 'choices_locked' then return nil end
@@ -71,7 +65,7 @@ function TextLog.lineForEvent(state, evt)
   if k == 'switch' then
     return Locale.t('battle.event.switch', {
       out_name = actorName(state, evt.out or evt.slot),
-      in_name = actorName(state, evt.in_ or evt.slot),
+      in_name  = actorName(state, evt.in_ or evt.slot),
     })
   end
   if k == 'item_used' then
@@ -94,14 +88,12 @@ function TextLog.lineForEvent(state, evt)
     if Locale.has(evt.key or '') then return Locale.t(evt.key, evt.args) end
     return Locale.t('battle.event.text.fallback', { key = evt.key or '?' })
   end
-  -- Unknown event kind — log a stub and continue (§9.1 additive rule).
   return nil
 end
 
 function TextLog.linesForResolve(state, body)
   local out = {}
   if type(body) ~= 'table' or type(body.events) ~= 'table' then return out end
-  -- Sort by seq just to be safe.
   local events = {}
   for _, e in ipairs(body.events) do events[#events + 1] = e end
   table.sort(events, function(a, b) return (a.seq or 0) < (b.seq or 0) end)
