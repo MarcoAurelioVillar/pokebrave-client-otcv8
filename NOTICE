@@ -1,0 +1,37 @@
+# NOTICE — Provenance and License Header Audit
+
+## This repository
+
+`pokebrave-client-otcv8` contains PokéBrave-specific OTCv8 module code
+(`modules/game_battlehud/`), tooling (`tools/`), and tests (`tests/`).
+
+All source files in this repository are original PokéBrave contributions.
+No upstream OTCv8 or OTClient source files are copied into this repository;
+upstream is consumed at runtime as the OTCv8 client binary.
+
+## Upstream projects
+
+This project is designed to run as a module within:
+
+- **OTClientV8** — MIT License
+  Copyright (c) 2010-2017 OTClient <https://github.com/edubart/otclient>
+  Copyright (c) 2018-2023 OTClientV8 (otclient@otclient.ovh) <https://github.com/OTCv8/otclientv8>
+
+- **tibia-devs/pokebrave-client-otcv8** — the OTCv8 client fork that hosts
+  this module. License cleanup for that fork is tracked in DEV-2.
+
+## Per-file header audit
+
+No source files in this repository carry per-file license headers. All files
+(`modules/`, `tools/`, `tests/`) are PokéBrave original contributions and are
+covered by the project-level `LICENSE` file (MIT, Copyright PokéBrave contributors).
+
+A follow-up task may add per-file `-- SPDX-License-Identifier: MIT` lines
+to each Lua/Python source for tooling compatibility.
+
+## Third-party components
+
+- `tools/json.lua` — a third-party JSON library for Lua. If it carries its own
+  license (commonly MIT or public domain), that license governs that file.
+  Verify the header in `tools/json.lua` and ensure compatibility with the
+  project-level MIT license.
